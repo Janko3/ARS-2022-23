@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 )
 
 func AddConfigGroup(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(r)
+	log.Println("Test")
 }
