@@ -2,7 +2,7 @@ package data
 
 import "github.com/XenZi/ARS-2022-23/model"
 
-func data() *model.Service {
+func Data() *model.Service {
 	s1 := model.Service{}
 
 	cf1 := model.Config{Entries: map[string]string{

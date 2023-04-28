@@ -9,7 +9,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func decodeBody(r io.Reader) (*model.Service, error) {
+func DecodeBody(r io.Reader) (*model.Service, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 
@@ -20,7 +20,7 @@ func decodeBody(r io.Reader) (*model.Service, error) {
 	return &s, nil
 }
 
-func renderJSON(w http.ResponseWriter, v interface{}) {
+func RenderJSON(w http.ResponseWriter, v interface{}) {
 	js, err := json.Marshal(v)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -31,6 +31,6 @@ func renderJSON(w http.ResponseWriter, v interface{}) {
 	w.Write(js)
 }
 
-func createId() string {
+func CreateId() string {
 	return uuid.New().String()
 }
