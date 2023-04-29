@@ -1,15 +1,16 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/XenZi/ARS-2022-23/service"
 	"github.com/XenZi/ARS-2022-23/utils"
-	"log"
-	"net/http"
 )
 
 func AddConfig(w http.ResponseWriter, r *http.Request) {
-	log.Println(r)
-	service.CreateConfig()
+
+	config := service.CreateConfig(w, r)
+	utils.RenderJSON(w, config)
 }
 
 func GetAllConfigs(w http.ResponseWriter, r *http.Request) {

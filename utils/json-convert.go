@@ -3,21 +3,22 @@ package utils
 import (
 	"encoding/json"
 	"io"
+	"mime"
 	"net/http"
 
 	"github.com/XenZi/ARS-2022-23/model"
 	"github.com/google/uuid"
 )
 
-func DecodeBody(r io.Reader) (*model.Service, error) {
+func DecodeBody(r io.Reader) (*model.Config, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
 
-	var s model.Service
-	if err := dec.Decode(&s); err != nil {
+	var config model.Config
+	if err := dec.Decode(&config); err != nil {
 		return nil, err
 	}
-	return &s, nil
+	return &config, nil
 }
 
 func RenderJSON(w http.ResponseWriter, v interface{}) {
@@ -31,6 +32,24 @@ func RenderJSON(w http.ResponseWriter, v interface{}) {
 	w.Write(js)
 }
 
+func doesContentTypeExists(req *http.Request) *model.BadRequest {
+	contentType := req.Header.Get("Content-Type")
+	_, _, err := mime.ParseMediaType(contentType)
+	if err != nil {
+		badRequest := model.BadRequest{Message: "Request is bad", StatusCode: http.StatusBadRequest}
+		return &badRequest
+	}
+	return nil
+}
+
+func IsContentTypeJSON(w http.ResponseWriter, req *http.Request) bool {
+	isRequestValid := doesContentTypeExists(req)
+	if isRequestValid != nil {
+		http.Error(w, isRequestValid.Message, isRequestValid.StatusCode)
+		return false
+	}
+	return true
+}
 func CreateId() string {
 	return uuid.New().String()
 }
