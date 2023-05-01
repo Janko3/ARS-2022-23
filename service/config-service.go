@@ -21,19 +21,31 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) *model.Config {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-	service := data.Data()
+	service := data.NewDataInstance().Service
 	service.AddConfig(config)
 	log.Println(service.Data)
 	return config
 }
 
 func GetAllConfigs() []*model.Config {
-	service := data.Data()
+	data := data.NewDataInstance().Service.Data
 	var listOfConfigs []*model.Config
-	for _, val := range service.Data {
+	for _, val := range data {
 		for i := 0; i < len(val); i++ {
 			listOfConfigs = append(listOfConfigs, val[i])
 		}
 	}
 	return listOfConfigs
+}
+
+func GetConfigById(configId string) *model.Config {
+	data := data.NewDataInstance().Service.Data
+	for _, val := range data {
+		for i := 0; i < len(val); i++ {
+			if val[i].Id == configId {
+				return val[i]
+			}
+		}
+	}
+	return nil
 }

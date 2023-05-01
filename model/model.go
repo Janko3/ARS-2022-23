@@ -1,6 +1,7 @@
 package model
 
 type Config struct {
+	Id      string            `json: "id"`
 	Entries map[string]string `json:"entries"`
 }
 
@@ -15,4 +16,8 @@ func (service *Service) AddConfig(config *Config) {
 type BadRequest struct {
 	Message    string
 	StatusCode int
+}
+
+type DbConfig struct {
+	Service Service
 }

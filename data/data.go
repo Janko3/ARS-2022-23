@@ -1,23 +1,15 @@
 package data
 
-import "github.com/XenZi/ARS-2022-23/model"
+import (
+	"github.com/XenZi/ARS-2022-23/model"
+)
 
-func Data() *model.Service {
-	s1 := model.Service{}
+var DataInstance *model.DbConfig
 
-	cf1 := model.Config{Entries: map[string]string{
-		"test":  "test",
-		"test2": "test2",
-	}}
-	cf2 := model.Config{Entries: map[string]string{
-		"test3": "test3",
-		"test4": "test4",
-	}}
-	cf1p := &cf1
-	cf2p := &cf2
-	cslice := []*model.Config{cf1p, cf2p}
-	s1.Data = map[string][]*model.Config{
-		"1": cslice,
+func NewDataInstance() *model.DbConfig {
+	if DataInstance == nil {
+		DataInstance = &model.DbConfig{}
+
 	}
-	return &s1
+	return DataInstance
 }

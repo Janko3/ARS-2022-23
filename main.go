@@ -2,20 +2,40 @@ package main
 
 import (
 	"context"
-	routerConfig "github.com/XenZi/ARS-2022-23/router"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/XenZi/ARS-2022-23/data"
+	"github.com/XenZi/ARS-2022-23/model"
+	routerConfig "github.com/XenZi/ARS-2022-23/router"
+	"github.com/XenZi/ARS-2022-23/utils"
 )
 
 func main() {
 	quit := make(chan os.Signal)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-
 	router := routerConfig.HandleRequests()
+	cf1 := model.Config{Id: utils.CreateId(), Entries: map[string]string{
+		"test":  "test",
+		"test2": "test2",
+	}}
+	cf2 := model.Config{Id: utils.CreateId(), Entries: map[string]string{
+		"test3": "test3",
+		"test4": "test4",
+	}}
+	cf1p := &cf1
+	cf2p := &cf2
+	cslice := []*model.Config{cf1p, cf2p}
+
+	db := data.NewDataInstance()
+	db.Service = model.Service{}
+	db.Service.Data = map[string][]*model.Config{
+		"1": cslice,
+	}
 	// start server
 	srv := &http.Server{Addr: "0.0.0.0:8000", Handler: router}
 	go func() {

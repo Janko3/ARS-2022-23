@@ -13,5 +13,6 @@ func HandleRequests() *mux.Router {
 	router.HandleFunc("/api/config", handlers.AddConfig).Methods("POST")
 	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
 	router.HandleFunc("/api/config", handlers.GetAllConfigs).Methods("GET")
+	router.HandleFunc("/api/config/{id}", handlers.GetOneConfig).Methods("GET")
 	return router
 }
