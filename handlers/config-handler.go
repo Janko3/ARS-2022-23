@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"log"
 	"net/http"
 
 	"github.com/XenZi/ARS-2022-23/service"
@@ -21,6 +20,16 @@ func GetAllConfigs(w http.ResponseWriter, r *http.Request) {
 
 func GetOneConfig(w http.ResponseWriter, r *http.Request) {
 	configId := mux.Vars(r)["id"]
-	log.Println(configId)
 	utils.RenderJSON(w, service.GetConfigById(configId))
+}
+
+func DeleteOneConfig(w http.ResponseWriter, r *http.Request) {
+	configId := mux.Vars(r)["id"]
+	firstValue, _ := service.DeleteConfigById(configId)
+	if firstValue == "" {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+	} else {
+		utils.RenderJSON(w, firstValue)
+	}
+
 }

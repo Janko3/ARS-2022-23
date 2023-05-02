@@ -49,3 +49,17 @@ func GetConfigById(configId string) *model.Config {
 	}
 	return nil
 }
+
+func DeleteConfigById(configId string) (string, *model.Config) {
+	log.Println(configId)
+	data := data.NewDataInstance().Service.Data
+	for k, val := range data {
+		for i := 0; i < len(val); i++ {
+			if val[i].Id == configId {
+				data[k] = utils.Remove(data[k], i)
+				return configId, nil
+			}
+		}
+	}
+	return "", nil
+}

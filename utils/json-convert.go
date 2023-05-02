@@ -53,3 +53,7 @@ func IsContentTypeJSON(w http.ResponseWriter, req *http.Request) bool {
 func CreateId() string {
 	return uuid.New().String()
 }
+
+func Remove(slice []*model.Config, s int) []*model.Config {
+	return append(slice[:s], slice[s+1:]...)
+}

@@ -14,5 +14,6 @@ func HandleRequests() *mux.Router {
 	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
 	router.HandleFunc("/api/config", handlers.GetAllConfigs).Methods("GET")
 	router.HandleFunc("/api/config/{id}", handlers.GetOneConfig).Methods("GET")
+	router.HandleFunc("/api/config/{id}", handlers.DeleteOneConfig).Methods("DELETE")
 	return router
 }
