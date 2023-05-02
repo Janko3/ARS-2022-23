@@ -11,8 +11,12 @@ Ova funkcija nam sluzi nesto nalik kontroleru gde cemo da izvlacimo funkcije iz 
 func HandleRequests() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/config", handlers.AddConfig).Methods("POST")
-	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
 	router.HandleFunc("/api/config", handlers.GetAllConfigs).Methods("GET")
 	router.HandleFunc("/api/config/{id}", handlers.GetOneConfig).Methods("GET")
+	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
+	router.HandleFunc("/api/group-config", handlers.GetAllGroupConfigs).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}", handlers.GetOneConfigGroup).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}", handlers.RemoveConfigGroup).Methods("DELETE")
+	router.HandleFunc("/api/group-config/{id}", handlers.AddConfigIntoGroup).Methods("PUT")
 	return router
 }

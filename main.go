@@ -30,9 +30,14 @@ func main() {
 	cf1p := &cf1
 	cf2p := &cf2
 	cslice := []*model.Config{cf1p, cf2p}
-
 	db := data.NewDataInstance()
 	db.Service = model.Service{}
+	db.ConfigGroups = []*model.ConfigGroup{
+		{
+			Id:    utils.CreateId(),
+			Group: []*model.Config{cf1p},
+		},
+	}
 	db.Service.Data = map[string][]*model.Config{
 		"1": cslice,
 	}
