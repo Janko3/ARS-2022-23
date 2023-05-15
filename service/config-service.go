@@ -39,11 +39,11 @@ func GetAllConfigs() []*model.Config {
 	return listOfConfigs
 }
 
-func GetConfigById(configId string) *model.Config {
+func GetConfigById(configId, configVersion string) *model.Config {
 	data := data.NewDataInstance().Service.Data
 	for _, val := range data {
 		for i := 0; i < len(val); i++ {
-			if val[i].Id == configId {
+			if val[i].Id == configId && val[i].Version == configVersion {
 				return val[i]
 			}
 		}
@@ -51,12 +51,12 @@ func GetConfigById(configId string) *model.Config {
 	return nil
 }
 
-func DeleteConfigById(configId string) (string, *model.Config) {
+func DeleteConfigById(configId, configVersion string) (string, *model.Config) {
 	log.Println(configId)
 	data := data.NewDataInstance().Service.Data
 	for k, val := range data {
 		for i := 0; i < len(val); i++ {
-			if val[i].Id == configId {
+			if val[i].Id == configId && val[i].Version == configVersion {
 				data[k] = utils.Remove(data[k], i)
 				return configId, nil
 			}

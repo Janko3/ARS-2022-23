@@ -20,12 +20,14 @@ func GetAllConfigs(w http.ResponseWriter, r *http.Request) {
 
 func GetOneConfig(w http.ResponseWriter, r *http.Request) {
 	configId := mux.Vars(r)["id"]
-	utils.RenderJSON(w, service.GetConfigById(configId))
+	version := mux.Vars(r)["version"]
+	utils.RenderJSON(w, service.GetConfigById(configId, version))
 }
 
 func DeleteOneConfig(w http.ResponseWriter, r *http.Request) {
 	configId := mux.Vars(r)["id"]
-	firstValue, _ := service.DeleteConfigById(configId)
+	version := mux.Vars(r)["version"]
+	firstValue, _ := service.DeleteConfigById(configId, version)
 	if firstValue == "" {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	} else {

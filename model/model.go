@@ -7,11 +7,13 @@ type Service struct {
 type Config struct {
 	Id      string            `json: "id"`
 	Entries map[string]string `json:"entries"`
+	Version string            `json:"version"`
 }
 
 type ConfigGroup struct {
-	Id    string             `json: "id"`
-	Group []*ConfigWithLabel `json: "group"`
+	Id      string             `json: "id"`
+	Group   []*ConfigWithLabel `json: "group"`
+	Version string             `json:"version"`
 }
 
 type ConfigWithLabel struct {
@@ -40,9 +42,9 @@ func (group *DbConfig) AddGroupIntoDb(configGroup *ConfigGroup) {
 	group.ConfigGroups = append(group.ConfigGroups, configGroup)
 }
 
-func (group *DbConfig) RemoveGroupFromDb(configGroupID string) {
+func (group *DbConfig) RemoveGroupFromDb(configGroupID, groupVersion string) {
 	for i := 0; i < len(group.ConfigGroups); i++ {
-		if group.ConfigGroups[i].Id == configGroupID {
+		if group.ConfigGroups[i].Id == configGroupID && group.ConfigGroups[i].Version == groupVersion {
 			group.ConfigGroups = append(group.ConfigGroups[:i], group.ConfigGroups[i+1:]...)
 		}
 	}

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+
 	"github.com/XenZi/ARS-2022-23/data"
 	"github.com/XenZi/ARS-2022-23/model"
 	"github.com/XenZi/ARS-2022-23/utils"
@@ -22,21 +23,21 @@ func GetAllGroupConfigs() []*model.ConfigGroup {
 	return data
 }
 
-func GetGroupById(groupID string) *model.ConfigGroup {
+func GetGroupById(groupID, groupVersion string) *model.ConfigGroup {
 	configGroups := data.DataInstance.ConfigGroups
 	for i := 0; i < len(configGroups); i++ {
-		if configGroups[i].Id == groupID {
+		if configGroups[i].Id == groupID && configGroups[i].Version == groupVersion {
 			return configGroups[i]
 		}
 	}
 	return nil
 }
 
-func GetGroupByIdAndLabel(groupId string, labelMatching string) []*model.ConfigWithLabel {
+func GetGroupByIdAndLabel(groupId string, labelMatching string, groupVersion string) []*model.ConfigWithLabel {
 	configGroups := data.DataInstance.ConfigGroups
 	var configsWithLabels []*model.ConfigWithLabel
 	for i := 0; i < len(configGroups); i++ {
-		if configGroups[i].Id == groupId {
+		if configGroups[i].Id == groupId && configGroups[i].Version == groupVersion {
 			for j := 0; j < len(configGroups[i].Group); j++ {
 				label := ""
 				for k, v := range configGroups[i].Group[j].Label {
@@ -53,8 +54,8 @@ func GetGroupByIdAndLabel(groupId string, labelMatching string) []*model.ConfigW
 	return configsWithLabels
 }
 
-func RemoveConfigGroup(groupID string) string {
+func RemoveConfigGroup(groupID, version string) string {
 	configGroups := data.DataInstance
-	configGroups.RemoveGroupFromDb(groupID)
+	configGroups.RemoveGroupFromDb(groupID, version)
 	return groupID
 }

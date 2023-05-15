@@ -12,12 +12,12 @@ func HandleRequests() *mux.Router {
 	router := mux.NewRouter()
 	router.HandleFunc("/api/config", handlers.AddConfig).Methods("POST")
 	router.HandleFunc("/api/config", handlers.GetAllConfigs).Methods("GET")
-	router.HandleFunc("/api/config/{id}", handlers.GetOneConfig).Methods("GET")
-	router.HandleFunc("/api/config/{id}", handlers.DeleteOneConfig).Methods("DELETE")
+	router.HandleFunc("/api/config/{id}/{version}", handlers.GetOneConfig).Methods("GET")
+	router.HandleFunc("/api/config/{id}/{version}", handlers.DeleteOneConfig).Methods("DELETE")
 	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
 	router.HandleFunc("/api/group-config", handlers.GetAllGroupConfigs).Methods("GET")
-	router.HandleFunc("/api/group-config/{id}", handlers.GetOneConfigGroup).Methods("GET")
-	router.HandleFunc("/api/group-config/{id}", handlers.RemoveConfigGroup).Methods("DELETE")
-	router.HandleFunc("/api/group-config/{id}/{label}", handlers.GetAllConfigsInGroupByLabel).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}/{version}", handlers.GetOneConfigGroup).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}/{version}", handlers.RemoveConfigGroup).Methods("DELETE")
+	router.HandleFunc("/api/group-config/{id}/{version}/{label}", handlers.GetAllConfigsInGroupByLabel).Methods("GET")
 	return router
 }
