@@ -1,0 +1,1 @@
+Ovde treba da implementiramo decode/encode JSONa, putanje za konekciju ka bazi itd
