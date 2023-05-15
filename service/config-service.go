@@ -21,6 +21,7 @@ func CreateConfig(w http.ResponseWriter, r *http.Request) *model.Config {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
+	config.Id = utils.CreateId()
 	service := data.NewDataInstance().Service
 	service.AddConfig(config)
 	log.Println(service.Data)
