@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/XenZi/ARS-2022-23/service"
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/gorilla/mux"
@@ -8,8 +9,8 @@ import (
 )
 
 func AddConfigGroup(w http.ResponseWriter, r *http.Request) {
-	keys, _ := utils.DecodeBodyForKeys(r.Body)
-	utils.RenderJSON(w, service.CreateConfigGroup(keys))
+	group, _ := utils.DecodeBodyForGroup(r.Body)
+	utils.RenderJSON(w, service.CreateConfigGroup(group))
 }
 
 func GetAllGroupConfigs(w http.ResponseWriter, r *http.Request) {
@@ -26,8 +27,10 @@ func RemoveConfigGroup(w http.ResponseWriter, r *http.Request) {
 	utils.RenderJSON(w, service.RemoveConfigGroup(groupID))
 }
 
-func AddConfigIntoGroup(w http.ResponseWriter, r *http.Request) {
+func GetAllConfigsInGroupByLabel(w http.ResponseWriter, r *http.Request) {
 	groupID := mux.Vars(r)["id"]
-	keys, _ := utils.DecodeBodyForKeys(r.Body)
-	utils.RenderJSON(w, service.AddConfigIntoGroup(groupID, keys))
+	label := mux.Vars(r)["label"]
+	fmt.Println(label)
+	fmt.Println(groupID)
+	utils.RenderJSON(w, service.GetGroupByIdAndLabel(groupID, label))
 }

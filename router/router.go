@@ -18,6 +18,6 @@ func HandleRequests() *mux.Router {
 	router.HandleFunc("/api/group-config", handlers.GetAllGroupConfigs).Methods("GET")
 	router.HandleFunc("/api/group-config/{id}", handlers.GetOneConfigGroup).Methods("GET")
 	router.HandleFunc("/api/group-config/{id}", handlers.RemoveConfigGroup).Methods("DELETE")
-	router.HandleFunc("/api/group-config/{id}", handlers.AddConfigIntoGroup).Methods("PUT")
+	router.HandleFunc("/api/group-config/{id}/{label}", handlers.GetAllConfigsInGroupByLabel).Methods("GET")
 	return router
 }

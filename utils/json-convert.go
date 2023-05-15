@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"mime"
 	"net/http"
 
@@ -22,17 +21,16 @@ func DecodeBody(r io.Reader) (*model.Config, error) {
 	return &config, nil
 }
 
-func DecodeBodyForKeys(r io.Reader) (*model.ConfigGroupRequest, error) {
+func DecodeBodyForGroup(r io.Reader) (*model.ConfigGroup, error) {
 	dec := json.NewDecoder(r)
 	dec.DisallowUnknownFields()
-
-	var keys model.ConfigGroupRequest
-	if err := dec.Decode(&keys); err != nil {
-		log.Println(err)
+	var configWithLabel model.ConfigGroup
+	if err := dec.Decode(&configWithLabel); err != nil {
 		return nil, err
 	}
-	return &keys, nil
+	return &configWithLabel, nil
 }
+
 func RenderJSON(w http.ResponseWriter, v interface{}) {
 	js, err := json.Marshal(v)
 	if err != nil {

@@ -1,19 +1,23 @@
 package model
 
+type Service struct {
+	Data map[string][]*Config
+}
+
 type Config struct {
 	Id      string            `json: "id"`
 	Entries map[string]string `json:"entries"`
 }
 
-type Service struct {
-	Data map[string][]*Config
-}
-
 type ConfigGroup struct {
-	Id    string    `json: "id"`
-	Group []*Config `json: "group"`
+	Id    string             `json: "id"`
+	Group []*ConfigWithLabel `json: "group"`
 }
 
+type ConfigWithLabel struct {
+	Label  map[string]string `json: "label"`
+	Config Config            `json: "config"`
+}
 type BadRequest struct {
 	Message    string
 	StatusCode int
@@ -44,6 +48,6 @@ func (group *DbConfig) RemoveGroupFromDb(configGroupID string) {
 	}
 }
 
-func (group *ConfigGroup) AddConfigIntoGroup(config *Config) {
+func (group *ConfigGroup) AddConfigIntoGroup(config *ConfigWithLabel) {
 	group.Group = append(group.Group, config)
 }

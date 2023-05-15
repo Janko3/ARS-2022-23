@@ -21,8 +21,15 @@ func NewDataInstance() *model.DbConfig {
 		DataInstance.Service = model.Service{}
 		DataInstance.ConfigGroups = []*model.ConfigGroup{
 			{
-				Id:    utils.CreateId(),
-				Group: []*model.Config{&cf1},
+				Id: utils.CreateId(),
+				Group: []*model.ConfigWithLabel{
+					{
+						Label: map[string]string{
+							"key1": "value1",
+						},
+						Config: cf1,
+					},
+				},
 			},
 		}
 		DataInstance.Service.Data = map[string][]*model.Config{

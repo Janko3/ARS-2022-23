@@ -1,29 +1,20 @@
 package service
 
 import (
+	"fmt"
 	"github.com/XenZi/ARS-2022-23/data"
 	"github.com/XenZi/ARS-2022-23/model"
 	"github.com/XenZi/ARS-2022-23/utils"
 )
 
-func CreateConfigGroup(request *model.ConfigGroupRequest) *model.ConfigGroup {
-	configs := data.NewDataInstance().Service.Data
-	newGroup := model.ConfigGroup{Id: utils.CreateId()}
-	var newGroupConfigs []*model.Config
-
-	for i := 0; i < len(request.Keys); i++ {
-		for _, v := range configs {
-			for j := 0; j < len(v); j++ {
-				if request.Keys[i] == v[j].Id {
-					newGroupConfigs = append(newGroupConfigs, v[j])
-				}
-			}
-		}
-	}
-	newGroup.Group = newGroupConfigs
+func CreateConfigGroup(group *model.ConfigGroup) *model.ConfigGroup {
 	data := data.NewDataInstance()
-	data.AddGroupIntoDb(&newGroup)
-	return &newGroup
+	group.Id = utils.CreateId()
+	for i := 0; i < len(group.Group); i++ {
+		group.Group[i].Config.Id = utils.CreateId()
+	}
+	data.AddGroupIntoDb(group)
+	return group
 }
 
 func GetAllGroupConfigs() []*model.ConfigGroup {
@@ -41,27 +32,25 @@ func GetGroupById(groupID string) *model.ConfigGroup {
 	return nil
 }
 
-func AddConfigIntoGroup(groupID string, request *model.ConfigGroupRequest) *model.ConfigGroup {
-	configs := data.NewDataInstance().Service.Data
-	groups := data.NewDataInstance().ConfigGroups
-	var group *model.ConfigGroup
-	for i := 0; i < len(groups); i++ {
-		if groups[i].Id == groupID {
-			{
-				group = groups[i]
-			}
-		}
-	}
-	for i := 0; i < len(request.Keys); i++ {
-		for _, v := range configs {
-			for j := 0; j < len(v); j++ {
-				if request.Keys[i] == v[j].Id {
-					group.AddConfigIntoGroup(v[j])
+func GetGroupByIdAndLabel(groupId string, labelMatching string) []*model.ConfigWithLabel {
+	configGroups := data.DataInstance.ConfigGroups
+	var configsWithLabels []*model.ConfigWithLabel
+	for i := 0; i < len(configGroups); i++ {
+		if configGroups[i].Id == groupId {
+			for j := 0; j < len(configGroups[i].Group); j++ {
+				label := ""
+				for k, v := range configGroups[i].Group[j].Label {
+					label += k + ":" + v + ";"
+				}
+				fmt.Println("....")
+				fmt.Println(label)
+				if label == (labelMatching + ";") {
+					configsWithLabels = append(configsWithLabels, configGroups[i].Group[j])
 				}
 			}
 		}
 	}
-	return group
+	return configsWithLabels
 }
 
 func RemoveConfigGroup(groupID string) string {
