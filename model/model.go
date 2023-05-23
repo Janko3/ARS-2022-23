@@ -35,9 +35,12 @@ type ConfigWithLabel struct {
 	// Label
 	// in: map[string]string
 	Label map[string]string `json: "label"`
-	// Config
-	// in: Config
-	Config Config `json: "config"`
+	// Id of the config
+	// in: string
+	Id string `json: "id"`
+	// Entries map of configs
+	// in: map[string]string
+	Entries map[string]string `json:"entries"`
 }
 
 type DbConfig struct {

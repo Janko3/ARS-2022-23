@@ -27,7 +27,11 @@ func NewDataInstance() *model.DbConfig {
 						Label: map[string]string{
 							"key1": "value1",
 						},
-						Config: cf1,
+						Id: utils.CreateId(),
+						Entries: map[string]string{
+							"1": "1",
+							"2": "2",
+						},
 					},
 				},
 			},

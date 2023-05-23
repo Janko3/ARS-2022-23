@@ -12,7 +12,7 @@ func CreateConfigGroup(group *model.ConfigGroup) *model.ConfigGroup {
 	data := data.NewDataInstance()
 	group.Id = utils.CreateId()
 	for i := 0; i < len(group.Group); i++ {
-		group.Group[i].Config.Id = utils.CreateId()
+		group.Group[i].Id = utils.CreateId()
 	}
 	data.AddGroupIntoDb(group)
 	return group
