@@ -1,9 +1,5 @@
 package model
 
-type Service struct {
-	Data map[string][]*Config
-}
-
 // Config swagger: model Config
 type Config struct {
 	// Id of the config
@@ -41,33 +37,4 @@ type ConfigWithLabel struct {
 	// Entries map of configs
 	// in: map[string]string
 	Entries map[string]string `json:"entries"`
-}
-
-type DbConfig struct {
-	Service      Service
-	ConfigGroups []*ConfigGroup
-}
-
-type ConfigGroupRequest struct {
-	Keys []string `json: "keys"`
-}
-
-func (service *Service) AddConfig(config *Config) {
-	service.Data["1"] = append(service.Data["1"], config)
-}
-
-func (group *DbConfig) AddGroupIntoDb(configGroup *ConfigGroup) {
-	group.ConfigGroups = append(group.ConfigGroups, configGroup)
-}
-
-func (group *DbConfig) RemoveGroupFromDb(configGroupID, groupVersion string) {
-	for i := 0; i < len(group.ConfigGroups); i++ {
-		if group.ConfigGroups[i].Id == configGroupID && group.ConfigGroups[i].Version == groupVersion {
-			group.ConfigGroups = append(group.ConfigGroups[:i], group.ConfigGroups[i+1:]...)
-		}
-	}
-}
-
-func (group *ConfigGroup) AddConfigIntoGroup(config *ConfigWithLabel) {
-	group.Group = append(group.Group, config)
 }
