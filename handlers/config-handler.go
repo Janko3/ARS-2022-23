@@ -10,6 +10,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
+type ConfigHandler struct {
+	Repo *repository.Repository
+}
+
 // swagger:route POST /api/config Configuration AddConfig
 // Create new configuration
 //
@@ -17,10 +21,6 @@ import (
 //
 //	400: BadRequest
 //		200: Config
-
-type ConfigHandler struct {
-	Repo *repository.Repository
-}
 
 func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.Request) {
 	contentType := req.Header.Get("Content-Type")

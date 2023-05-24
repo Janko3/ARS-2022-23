@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/XenZi/ARS-2022-23/model"
 	"github.com/XenZi/ARS-2022-23/utils"
+	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
 	"os"
 )
@@ -91,6 +92,101 @@ func (repo *Repository) GetAll() ([]*model.Config, error) {
 		}
 		configs = append(configs, config)
 	}
-
 	return configs, nil
+}
+
+func (repo *Repository) CreateNewGroup(group *model.ConfigGroup) (*model.ConfigGroup, error) {
+	kv := repo.cli.KV()
+
+	group.Id = uuid.New().String()
+	for i := 0; i < len(group.Group); i++ {
+		group.Group[i].Id = uuid.New().String()
+		generatedLabels := utils.GetLabelAsStringWithSeparator(group.Group[i].Label)
+		data, err := json.Marshal(group.Group[i])
+		if err != nil {
+			return nil, err
+		}
+		placedValue := &api.KVPair{Key: utils.ConstructGroupKey(group.Id, group.Version, generatedLabels, group.Group[i].Id), Value: data}
+		_, err = kv.Put(placedValue, nil)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return group, nil
+}
+
+func (repo *Repository) GetGroupByID(id string, version string) (*model.ConfigGroup, error) {
+	kv := repo.cli.KV()
+	data, _, err := kv.List("group/"+id+"/"+version, nil)
+	if err != nil {
+		return nil, err
+	}
+	var groupList []*model.ConfigWithLabel
+	for _, key := range data {
+		config := &model.ConfigWithLabel{}
+		err := json.Unmarshal(key.Value, config)
+		if err != nil {
+			return nil, err
+		}
+		groupList = append(groupList, config)
+	}
+	return &model.ConfigGroup{Group: groupList, Id: id, Version: version}, nil
+}
+
+func (repo *Repository) GetAllGroups() ([]*model.ConfigGroup, error) {
+	kv := repo.cli.KV()
+
+	data, _, err := kv.List("group/", nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	groupMap := make(map[string]*model.ConfigGroup)
+	groupList := []*model.ConfigGroup{}
+
+	for _, key := range data {
+		config := &model.ConfigWithLabel{}
+		err := json.Unmarshal(key.Value, config)
+		if err != nil {
+			return nil, err
+		}
+
+		groupVersion := utils.GetKeyIndexInfo("groupVersion", key.Key)
+		groupID := utils.GetKeyIndexInfo("groupID", key.Key)
+		if groupMap[groupID+groupVersion] == nil {
+			newGroup := &model.ConfigGroup{}
+			newGroup.Group = []*model.ConfigWithLabel{}
+			newGroup.Version = groupVersion
+			newGroup.Id = groupID
+			newGroup.Group = append(newGroup.Group, config)
+			groupMap[groupID+groupVersion] = newGroup
+		} else {
+			groupMap[groupID+groupVersion].Group = append(groupMap[groupID+groupVersion].Group, config)
+		}
+	}
+
+	for _, g := range groupMap {
+		groupList = append(groupList, g)
+	}
+	return groupList, nil
+}
+
+func (repo *Repository) GetGroupConfigsByMatchingLabel(id, version, label string) (*model.ConfigGroup, error) {
+	kv := repo.cli.KV()
+	data, _, err := kv.List("group/"+id+"/"+version+"/"+label+"/", nil)
+	if err != nil {
+		return nil, err
+	}
+	var groupList []*model.ConfigWithLabel
+	for _, key := range data {
+		config := &model.ConfigWithLabel{}
+		err := json.Unmarshal(key.Value, config)
+		if err != nil {
+			return nil, err
+		}
+		groupList = append(groupList, config)
+	}
+	return &model.ConfigGroup{Group: groupList, Id: id, Version: version}, nil
+
 }

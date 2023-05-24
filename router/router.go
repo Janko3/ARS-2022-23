@@ -28,15 +28,18 @@ func HandleRequests() *mux.Router {
 	configHandler := handlers.ConfigHandler{
 		Repo: createdRepository,
 	}
+	configGroupHandler := handlers.ConfigGroupHandler{
+		Repo: createdRepository,
+	}
 	router.HandleFunc("/api/config", configHandler.AddConfig).Methods("POST")
 	router.HandleFunc("/api/config", configHandler.GetAll).Methods("GET")
 	router.HandleFunc("/api/config/{id}/{version}", configHandler.GetOneConfig).Methods("GET")
 	router.HandleFunc("/api/config/{id}/{version}", configHandler.DeleteOneConfig).Methods("DELETE")
-	router.HandleFunc("/api/group-config", handlers.AddConfigGroup).Methods("POST")
-	router.HandleFunc("/api/group-config", handlers.GetAllGroupConfigs).Methods("GET")
-	router.HandleFunc("/api/group-config/{id}/{version}", handlers.GetOneConfigGroup).Methods("GET")
-	router.HandleFunc("/api/group-config/{id}/{version}", handlers.RemoveConfigGroup).Methods("DELETE")
-	router.HandleFunc("/api/group-config/{id}/{version}/{label}", handlers.GetAllConfigsInGroupByLabel).Methods("GET")
+	router.HandleFunc("/api/group-config", configGroupHandler.AddConfigGroup).Methods("POST")
+	router.HandleFunc("/api/group-config", configGroupHandler.GetAllGroupConfigs).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}/{version}/", configGroupHandler.GetOneConfigGroup).Methods("GET")
+	//router.HandleFunc("/api/group-config/{id}/{version}", handlers.RemoveConfigGroup).Methods("DELETE")
+	router.HandleFunc("/api/group-config/{id}/{version}/{label}", configGroupHandler.GetAllConfigsInGroupByLabel).Methods("GET")
 	router.HandleFunc("/swagger.yaml", handlers.SwaggerHandler).Methods("GET")
 
 	// SwaggerUI
