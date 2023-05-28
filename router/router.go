@@ -14,6 +14,7 @@ package router
 
 import (
 	"github.com/XenZi/ARS-2022-23/handlers"
+	"github.com/XenZi/ARS-2022-23/metrics"
 	"github.com/XenZi/ARS-2022-23/repository"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
@@ -31,16 +32,17 @@ func HandleRequests() *mux.Router {
 	configGroupHandler := handlers.ConfigGroupHandler{
 		Repo: createdRepository,
 	}
-	router.HandleFunc("/api/config", configHandler.AddConfig).Methods("POST")
-	router.HandleFunc("/api/config", configHandler.GetAll).Methods("GET")
-	router.HandleFunc("/api/config/{id}/{version}", configHandler.GetOneConfig).Methods("GET")
-	router.HandleFunc("/api/config/{id}/{version}", configHandler.DeleteOneConfig).Methods("DELETE")
-	router.HandleFunc("/api/group-config", configGroupHandler.AddConfigGroup).Methods("POST")
-	router.HandleFunc("/api/group-config", configGroupHandler.GetAllGroupConfigs).Methods("GET")
-	router.HandleFunc("/api/group-config/{id}/{version}/", configGroupHandler.GetOneConfigGroup).Methods("GET")
+	router.HandleFunc("/api/config", metrics.Count("api/config", configHandler.AddConfig)).Methods("POST")
+	router.HandleFunc("/api/config", metrics.Count("api/config", configHandler.GetAll)).Methods("GET")
+	router.HandleFunc("/api/config/{id}/{version}", metrics.Count("api/config/{id}/{version}", configHandler.GetOneConfig)).Methods("GET")
+	router.HandleFunc("/api/config/{id}/{version}", metrics.Count("api/config/{id}/{version}", configHandler.DeleteOneConfig)).Methods("DELETE")
+	router.HandleFunc("/api/group-config", metrics.Count("/api/group-config", configGroupHandler.AddConfigGroup)).Methods("POST")
+	router.HandleFunc("/api/group-config", metrics.Count("/api/group-config", configGroupHandler.GetAllGroupConfigs)).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}/{version}/", metrics.Count("/api/group-config/{id}/{version}/", configGroupHandler.GetOneConfigGroup)).Methods("GET")
 	//router.HandleFunc("/api/group-config/{id}/{version}", handlers.RemoveConfigGroup).Methods("DELETE")
-	router.HandleFunc("/api/group-config/{id}/{version}/{label}", configGroupHandler.GetAllConfigsInGroupByLabel).Methods("GET")
+	router.HandleFunc("/api/group-config/{id}/{version}/{label}", metrics.Count("/api/group-config/{id}/{version}/{label}", configGroupHandler.GetAllConfigsInGroupByLabel)).Methods("GET")
 	router.HandleFunc("/swagger.yaml", handlers.SwaggerHandler).Methods("GET")
+	router.Path("/metrics").Handler(metrics.MetricsHandler())
 
 	// SwaggerUI
 	optionsDevelopers := middleware.SwaggerUIOpts{SpecURL: "swagger.yaml"}
