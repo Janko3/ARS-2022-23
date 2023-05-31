@@ -38,3 +38,7 @@ type ConfigWithLabel struct {
 	// in: map[string]string
 	Entries map[string]string `json:"entries"`
 }
+
+type configServer struct {
+	Keys map[string]string
+}

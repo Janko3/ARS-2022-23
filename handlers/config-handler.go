@@ -2,9 +2,10 @@ package handlers
 
 import (
 	"errors"
-	"github.com/XenZi/ARS-2022-23/repository"
 	"mime"
 	"net/http"
+
+	"github.com/XenZi/ARS-2022-23/repository"
 
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/gorilla/mux"
@@ -23,6 +24,11 @@ type ConfigHandler struct {
 //		200: Config
 
 func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.Request) {
+	_, err := utils.DoesKeyExistInTheCurrentSessionOfRequests(req)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	contentType := req.Header.Get("Content-Type")
 	mediatype, _, err := mime.ParseMediaType(contentType)
 	if err != nil {

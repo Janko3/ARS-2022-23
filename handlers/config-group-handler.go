@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"errors"
+	"mime"
+	"net/http"
+
 	"github.com/XenZi/ARS-2022-23/repository"
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/gorilla/mux"
-	"mime"
-	"net/http"
 )
 
 type ConfigGroupHandler struct {
@@ -21,6 +22,11 @@ type ConfigGroupHandler struct {
 //	400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWriter, r *http.Request) {
+	_, err := utils.DoesKeyExistInTheCurrentSessionOfRequests(r)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	contentType := r.Header.Get("Content-Type")
 	mediatype, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
