@@ -1,17 +1,25 @@
 package handlers
 
 import (
+	"context"
 	"errors"
-	"github.com/XenZi/ARS-2022-23/repository"
+	"fmt"
+	"io"
 	"mime"
 	"net/http"
+
+	"github.com/XenZi/ARS-2022-23/repository"
+	"github.com/XenZi/ARS-2022-23/tracing"
+	"github.com/opentracing/opentracing-go"
 
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/gorilla/mux"
 )
 
 type ConfigHandler struct {
-	Repo *repository.Repository
+	Repo   *repository.Repository
+	tracer opentracing.Tracer
+	closer io.Closer
 }
 
 // swagger:route POST /api/config Configuration AddConfig
@@ -23,6 +31,13 @@ type ConfigHandler struct {
 //		200: Config
 
 func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.Request) {
+	span := tracing.StartSpanFromRequest("addConfig", configHandler.tracer, req)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("creating config at: %s\n", req.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	contentType := req.Header.Get("Content-Type")
 	mediatype, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
@@ -36,7 +51,7 @@ func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.R
 		return
 	}
 
-	config, err := utils.DecodeBody(req.Body)
+	config, err := utils.DecodeBody(req.Body, cont)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -48,7 +63,8 @@ func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.R
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, createdConfig)
+	utils.RenderJSON(w, createdConfig, cont)
+
 }
 
 // swagger:route GET /api/config/{id}/{version} Configuration GetOneConfig
@@ -59,6 +75,13 @@ func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.R
 //	 400: BadRequest
 //		200: Config
 func (configHandler *ConfigHandler) GetOneConfig(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("getOneConfig", configHandler.tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("get one config at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	configId := mux.Vars(r)["id"]
 	version := mux.Vars(r)["version"]
 	config, err := configHandler.Repo.GetConfigById(configId, version)
@@ -66,7 +89,7 @@ func (configHandler *ConfigHandler) GetOneConfig(w http.ResponseWriter, r *http.
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, config)
+	utils.RenderJSON(w, config, cont)
 }
 
 // swagger:route DELETE /api/config/{id}/{version} Configuration DeleteOneConfig
@@ -77,6 +100,13 @@ func (configHandler *ConfigHandler) GetOneConfig(w http.ResponseWriter, r *http.
 // 400: BadRequest
 // 200: Config
 func (configHandler *ConfigHandler) DeleteOneConfig(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("deleteOneConfig", configHandler.tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("delete config at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	configId := mux.Vars(r)["id"]
 	version := mux.Vars(r)["version"]
 	config, err := configHandler.Repo.DeleteConfig(configId, version)
@@ -84,7 +114,7 @@ func (configHandler *ConfigHandler) DeleteOneConfig(w http.ResponseWriter, r *ht
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, config)
+	utils.RenderJSON(w, config, cont)
 }
 
 // swagger:route GET /api/config Configuration GetAllConfigs
@@ -96,10 +126,17 @@ func (configHandler *ConfigHandler) DeleteOneConfig(w http.ResponseWriter, r *ht
 //	200: []Config
 
 func (configHandler *ConfigHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("getAll", configHandler.tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("get all configs at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	configs, err := configHandler.Repo.GetAll()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, configs)
+	utils.RenderJSON(w, configs, cont)
 }
