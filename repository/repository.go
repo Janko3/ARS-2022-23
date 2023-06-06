@@ -1,13 +1,16 @@
 package repository
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"os"
+
 	"github.com/XenZi/ARS-2022-23/model"
+	"github.com/XenZi/ARS-2022-23/tracing"
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/google/uuid"
 	"github.com/hashicorp/consul/api"
-	"os"
 )
 
 type Repository struct {
@@ -172,7 +175,13 @@ func (repo *Repository) GetAllGroups() ([]*model.ConfigGroup, error) {
 	return groupList, nil
 }
 
-func (repo *Repository) GetGroupConfigsByMatchingLabel(id, version, label string) (*model.ConfigGroup, error) {
+func (repo *Repository) GetGroupConfigsByMatchingLabel(id, version, label string, cont context.Context) (*model.ConfigGroup, error) {
+	span := tracing.StartSpanFromContext(cont, "GetGroupConfigsByMatchingLabel")
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("repo", fmt.Sprintf("get all config Groups by label:\n")),
+	)
 	kv := repo.cli.KV()
 	data, _, err := kv.List("group/"+id+"/"+version+"/"+label+"/", nil)
 	if err != nil {

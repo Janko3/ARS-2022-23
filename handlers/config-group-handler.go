@@ -1,17 +1,25 @@
 package handlers
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"io"
 	"mime"
 	"net/http"
 
 	"github.com/XenZi/ARS-2022-23/repository"
+
+	"github.com/XenZi/ARS-2022-23/tracing"
 	"github.com/XenZi/ARS-2022-23/utils"
 	"github.com/gorilla/mux"
+	"github.com/opentracing/opentracing-go"
 )
 
 type ConfigGroupHandler struct {
-	Repo *repository.Repository
+	Repo   *repository.Repository
+	Tracer opentracing.Tracer
+	Closer io.Closer
 }
 
 // swagger:route POST /api/group-config Groups AddConfigGroup
@@ -27,6 +35,13 @@ func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWrit
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	span := tracing.StartSpanFromRequest("addConfigGroup", configGroupHandler.Tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("add one config Group at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	contentType := r.Header.Get("Content-Type")
 	mediatype, _, err := mime.ParseMediaType(contentType)
 	if err != nil {
@@ -40,7 +55,7 @@ func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWrit
 		return
 	}
 
-	group, err := utils.DecodeBodyForGroup(r.Body)
+	group, err := utils.DecodeBodyForGroup(r.Body, cont)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -51,7 +66,7 @@ func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWrit
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, createdConfig)
+	utils.RenderJSON(w, createdConfig, cont)
 }
 
 // swagger:route GET /api/group-config Groups GetAllGroupConfigs
@@ -62,15 +77,22 @@ func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWrit
 //	400: BadRequest
 //	200: []ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetAllGroupConfigs(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("getAllGroupConfigs", configGroupHandler.Tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("get all config Groups at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	groups, err := configGroupHandler.Repo.GetAllGroups()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	utils.RenderJSON(w, groups)
+	utils.RenderJSON(w, groups, cont)
 }
 
-// swagger:route GET /api/group-config/{id}/{version} Groups GetOneConfigGroup
+// swagger:route GET /api/group-config/{id}/{version}/ Groups GetOneConfigGroup
 // Get one configuration group
 //
 // responses:
@@ -78,6 +100,13 @@ func (configGroupHandler *ConfigGroupHandler) GetAllGroupConfigs(w http.Response
 //	 400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetOneConfigGroup(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("getOneConfigGroup", configGroupHandler.Tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("get one config Group at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	groupID := mux.Vars(r)["id"]
 	version := mux.Vars(r)["version"]
 	group, err := configGroupHandler.Repo.GetGroupByID(groupID, version)
@@ -85,7 +114,7 @@ func (configGroupHandler *ConfigGroupHandler) GetOneConfigGroup(w http.ResponseW
 		http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
 		return
 	}
-	utils.RenderJSON(w, group)
+	utils.RenderJSON(w, group, cont)
 }
 
 // swagger:route DELETE /api/group-config/{id}/{version} Groups RemoveConfigGroup
@@ -109,13 +138,21 @@ func RemoveConfigGroup(w http.ResponseWriter, r *http.Request) {
 //	 400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetAllConfigsInGroupByLabel(w http.ResponseWriter, r *http.Request) {
+	span := tracing.StartSpanFromRequest("getAllConfigsInGroupByLabel", configGroupHandler.Tracer, r)
+	defer span.Finish()
+
+	span.LogFields(
+		tracing.LogString("handler", fmt.Sprintf("get all config Groups by label at: %s\n", r.URL.Path)),
+	)
+	cont := tracing.ContextWithSpan(context.Background(), span)
 	id := mux.Vars(r)["id"]
 	label := mux.Vars(r)["label"]
 	version := mux.Vars(r)["version"]
-	group, err := configGroupHandler.Repo.GetGroupConfigsByMatchingLabel(id, version, label)
+
+	group, err := configGroupHandler.Repo.GetGroupConfigsByMatchingLabel(id, version, label, cont)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
 		return
 	}
-	utils.RenderJSON(w, group)
+	utils.RenderJSON(w, group, cont)
 }

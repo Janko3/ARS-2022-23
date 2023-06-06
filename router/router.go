@@ -16,8 +16,10 @@ import (
 	"github.com/XenZi/ARS-2022-23/handlers"
 	"github.com/XenZi/ARS-2022-23/metrics"
 	"github.com/XenZi/ARS-2022-23/repository"
+	"github.com/XenZi/ARS-2022-23/tracing"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
+	"github.com/opentracing/opentracing-go"
 )
 
 /*
@@ -25,12 +27,22 @@ Ova funkcija nam sluzi nesto nalik kontroleru gde cemo da izvlacimo funkcije iz 
 */
 func HandleRequests() *mux.Router {
 	router := mux.NewRouter()
-	createdRepository, _ := repository.New()
-	configHandler := handlers.ConfigHandler{
-		Repo: createdRepository,
+	createdRepository, err := repository.New()
+	if err != nil {
+		panic(err.Error())
 	}
+	trace, closer := tracing.Init("configHandler")
+	opentracing.SetGlobalTracer(trace)
+	configHandler := handlers.ConfigHandler{
+		Repo:   createdRepository,
+		Tracer: trace,
+		Closer: closer,
+	}
+
 	configGroupHandler := handlers.ConfigGroupHandler{
-		Repo: createdRepository,
+		Repo:   createdRepository,
+		Tracer: trace,
+		Closer: closer,
 	}
 	router.HandleFunc("/api/config", metrics.Count("api/config", configHandler.AddConfig)).Methods("POST")
 	router.HandleFunc("/api/config", metrics.Count("api/config", configHandler.GetAll)).Methods("GET")
