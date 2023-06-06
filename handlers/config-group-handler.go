@@ -17,8 +17,8 @@ import (
 
 type ConfigGroupHandler struct {
 	Repo   *repository.Repository
-	tracer opentracing.Tracer
-	closer io.Closer
+	Tracer opentracing.Tracer
+	Closer io.Closer
 }
 
 // swagger:route POST /api/group-config Groups AddConfigGroup
@@ -29,7 +29,7 @@ type ConfigGroupHandler struct {
 //	400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("addConfigGroup", configGroupHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("addConfigGroup", configGroupHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -71,7 +71,7 @@ func (configGroupHandler *ConfigGroupHandler) AddConfigGroup(w http.ResponseWrit
 //	400: BadRequest
 //	200: []ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetAllGroupConfigs(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("getAllGroupConfigs", configGroupHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("getAllGroupConfigs", configGroupHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -94,7 +94,7 @@ func (configGroupHandler *ConfigGroupHandler) GetAllGroupConfigs(w http.Response
 //	 400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetOneConfigGroup(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("getOneConfigGroup", configGroupHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("getOneConfigGroup", configGroupHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -132,7 +132,7 @@ func RemoveConfigGroup(w http.ResponseWriter, r *http.Request) {
 //	 400: BadRequest
 //		200: ConfigGroup
 func (configGroupHandler *ConfigGroupHandler) GetAllConfigsInGroupByLabel(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("getAllConfigsInGroupByLabel", configGroupHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("getAllConfigsInGroupByLabel", configGroupHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -142,7 +142,8 @@ func (configGroupHandler *ConfigGroupHandler) GetAllConfigsInGroupByLabel(w http
 	id := mux.Vars(r)["id"]
 	label := mux.Vars(r)["label"]
 	version := mux.Vars(r)["version"]
-	group, err := configGroupHandler.Repo.GetGroupConfigsByMatchingLabel(id, version, label)
+
+	group, err := configGroupHandler.Repo.GetGroupConfigsByMatchingLabel(id, version, label, cont)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
 		return

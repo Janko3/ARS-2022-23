@@ -18,8 +18,8 @@ import (
 
 type ConfigHandler struct {
 	Repo   *repository.Repository
-	tracer opentracing.Tracer
-	closer io.Closer
+	Tracer opentracing.Tracer
+	Closer io.Closer
 }
 
 // swagger:route POST /api/config Configuration AddConfig
@@ -31,7 +31,7 @@ type ConfigHandler struct {
 //		200: Config
 
 func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.Request) {
-	span := tracing.StartSpanFromRequest("addConfig", configHandler.tracer, req)
+	span := tracing.StartSpanFromRequest("addConfig", configHandler.Tracer, req)
 	defer span.Finish()
 
 	span.LogFields(
@@ -75,7 +75,7 @@ func (configHandler *ConfigHandler) AddConfig(w http.ResponseWriter, req *http.R
 //	 400: BadRequest
 //		200: Config
 func (configHandler *ConfigHandler) GetOneConfig(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("getOneConfig", configHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("getOneConfig", configHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -100,7 +100,7 @@ func (configHandler *ConfigHandler) GetOneConfig(w http.ResponseWriter, r *http.
 // 400: BadRequest
 // 200: Config
 func (configHandler *ConfigHandler) DeleteOneConfig(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("deleteOneConfig", configHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("deleteOneConfig", configHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
@@ -126,7 +126,7 @@ func (configHandler *ConfigHandler) DeleteOneConfig(w http.ResponseWriter, r *ht
 //	200: []Config
 
 func (configHandler *ConfigHandler) GetAll(w http.ResponseWriter, r *http.Request) {
-	span := tracing.StartSpanFromRequest("getAll", configHandler.tracer, r)
+	span := tracing.StartSpanFromRequest("getAllConfigs", configHandler.Tracer, r)
 	defer span.Finish()
 
 	span.LogFields(
