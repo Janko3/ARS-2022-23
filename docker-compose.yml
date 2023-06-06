@@ -19,6 +19,7 @@ services:
       - "14268:14268"
       - "14250:14250"
   app:
+    image: janko3/ARS-2022-23
     build: .
     restart: always
     ports:
