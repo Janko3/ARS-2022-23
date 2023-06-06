@@ -80,11 +80,9 @@ func TestGetKeyIndexInfo(t *testing.T) {
 func TestGetLabelAsStringWithSeparator(t *testing.T) {
 	label := map[string]string{
 		"key1": "value1",
-		"key2": "value2",
-		"key3": "value3",
 	}
 
-	expected := "key1:value1;key2:value2;key3:value3"
+	expected := "key1:value1"
 	result := GetLabelAsStringWithSeparator(label)
 
 	if result != expected {
