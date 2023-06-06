@@ -2,6 +2,7 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"net/http"
 	"testing"
 )
@@ -16,7 +17,7 @@ func TestDecodeBody(t *testing.T) {
 	}`)
 	bodyReader := bytes.NewReader(jsonBody)
 	req, _ := http.NewRequest("POST", "/", bodyReader)
-	_, err := DecodeBody(req.Body)
+	_, err := DecodeBody(req.Body, context.Background())
 	if err != nil {
 		t.Errorf("Test not successful. Expected: Configuration, but got: %s", err.Error())
 	}
@@ -42,7 +43,7 @@ func TestDecodeBodyGroup(t *testing.T) {
 	  }`)
 	bodyReader := bytes.NewReader(jsonBody)
 	req, _ := http.NewRequest("POST", "/", bodyReader)
-	_, err := DecodeBodyForGroup(req.Body)
+	_, err := DecodeBodyForGroup(req.Body, context.Background())
 	if err != nil {
 		t.Errorf("Test not successful. Expected: ConfigurationGroup, but got: %s", err.Error())
 	}
