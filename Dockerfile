@@ -32,7 +32,7 @@ WORKDIR /root/
 
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/main .
-
+COPY ./swagger.yaml .
 EXPOSE 8000
 
 # Command to run the executable

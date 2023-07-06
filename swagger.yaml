@@ -1,0 +1,306 @@
+basePath: /
+definitions:
+  Config:
+    description: "Config swagger: model Config"
+    properties:
+      Id:
+        description: |-
+          Id of the config
+          in: string
+        type: string
+      entries:
+        additionalProperties:
+          type: string
+        description: |-
+          Entries map of configs
+          in: map[string]string
+        type: object
+        x-go-name: Entries
+      version:
+        description: |-
+          Version of the config
+          in: string
+        type: string
+        x-go-name: Version
+    type: object
+    x-go-package: github.com/XenZi/ARS-2022-23/model
+  ConfigGroup:
+    description: "ConfigGroup swagger: model ConfigGroup"
+    properties:
+      group:
+        description: |-
+          Array of configs with label
+          in: []*ConfigWithLabel
+        items:
+          $ref: "#/definitions/ConfigWithLabel"
+        type: array
+        x-go-name: Group
+      id:
+        description: |-
+          Id of the group
+          in: string
+        type: string
+        x-go-name: Id
+      version:
+        description: |-
+          Version of the group
+          in: string
+        type: string
+        x-go-name: Version
+    type: object
+    x-go-package: github.com/XenZi/ARS-2022-23/model
+  ConfigWithLabel:
+    description: "ConfigWithLabel swagger: model ConfigWithLabel"
+    properties:
+      Id:
+        description: |-
+          Id of the config
+          in: string
+        type: string
+      Label:
+        additionalProperties:
+          type: string
+        description: |-
+          Label
+          in: map[string]string
+        type: object
+      entries:
+        additionalProperties:
+          type: string
+        description: |-
+          Entries map of configs
+          in: map[string]string
+        type: object
+        x-go-name: Entries
+    type: object
+    x-go-package: github.com/XenZi/ARS-2022-23/model
+info:
+  description: "Title: Config Service API"
+  title: Config Service API
+  version: 0.0.1
+paths:
+  /api/config:
+    get:
+      description: Get all configurations
+      operationId: GetAllConfigs
+      responses:
+        "200":
+          description: Config
+          schema:
+            items:
+              $ref: "#/definitions/Config"
+            type: array
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Configuration
+    post:
+      description: Create new configuration
+      operationId: AddConfig
+      parameters:
+        - description: "name: body"
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/Config"
+          x-go-name: Body
+      responses:
+        "200":
+          description: Config
+          schema:
+            $ref: "#/definitions/Config"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Configuration
+  /api/config/{id}/{version}:
+    delete:
+      description: Delete one configuration
+      operationId: DeleteOneConfig
+      parameters:
+        - description: "name: Id"
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: Id
+        - description: "name: Version"
+          in: path
+          name: version
+          required: true
+          type: string
+          x-go-name: Version
+      responses:
+        "200":
+          description: Config
+          schema:
+            $ref: "#/definitions/Config"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Configuration
+    get:
+      description: Get one configuration
+      operationId: GetOneConfig
+      parameters:
+        - description: "name: Id"
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: Id
+        - description: "name: Version"
+          in: path
+          name: version
+          required: true
+          type: string
+          x-go-name: Version
+      responses:
+        "200":
+          description: Config
+          schema:
+            $ref: "#/definitions/Config"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Configuration
+  /api/group-config:
+    get:
+      description: Get all configurations groups
+      operationId: GetAllGroupConfigs
+      responses:
+        "200":
+          description: ConfigGroup
+          schema:
+            items:
+              $ref: "#/definitions/ConfigGroup"
+            type: array
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Groups
+    post:
+      description: Create new configuration group
+      operationId: AddConfigGroup
+      parameters:
+        - description: "name: body"
+          in: body
+          name: body
+          required: true
+          schema:
+            $ref: "#/definitions/ConfigGroup"
+          x-go-name: Body
+      responses:
+        "200":
+          description: ConfigGroup
+          schema:
+            $ref: "#/definitions/ConfigGroup"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Groups
+  /api/group-config/{id}/{version}:
+    delete:
+      description: Remove one configuration group
+      operationId: RemoveConfigGroup
+      parameters:
+        - description: "name: Id"
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: Id
+        - description: "name: Version"
+          in: path
+          name: version
+          required: true
+          type: string
+          x-go-name: Version
+      responses:
+        "200":
+          description: ConfigGroup
+          schema:
+            $ref: "#/definitions/ConfigGroup"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Groups
+  /api/group-config/{id}/{version}/:
+    get:
+      description: Get one configuration group
+      operationId: GetOneConfigGroup
+      parameters:
+        - description: "name: Id"
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: Id
+        - description: "name: Version"
+          in: path
+          name: version
+          required: true
+          type: string
+          x-go-name: Version
+      responses:
+        "200":
+          description: ConfigGroup
+          schema:
+            $ref: "#/definitions/ConfigGroup"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Groups
+  /api/group-config/{id}/{version}/{label}:
+    get:
+      description: Get one configuration group by label
+      operationId: GetAllConfigsInGroupByLabel
+      parameters:
+        - description: "name: Id"
+          in: path
+          name: id
+          required: true
+          type: string
+          x-go-name: Id
+        - description: "name: Version"
+          in: path
+          name: version
+          required: true
+          type: string
+          x-go-name: Version
+        - description: "name: Label"
+          in: path
+          name: label
+          required: true
+          type: string
+          x-go-name: Label
+      responses:
+        "200":
+          description: ConfigGroup
+          schema:
+            $ref: "#/definitions/ConfigGroup"
+        "400":
+          $ref: "#/responses/BadRequest"
+      tags:
+        - Groups
+produces:
+  - application/json
+responses:
+  BadRequest:
+    description: ""
+    headers:
+      Message:
+        description: |-
+          Error message
+          in: string
+        type: string
+      StatusCode:
+        description: |-
+          Error status
+          in: int
+        format: int64
+        type: integer
+schemes:
+  - http
+swagger: "2.0"
